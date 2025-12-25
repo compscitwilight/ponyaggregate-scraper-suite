@@ -2,7 +2,6 @@ require("dotenv").config({ quiet: true });
 
 const fs = require("node:fs");
 const path = require("node:path");
-const crypto = require("node:crypto");
 const cheerio = require("cheerio");
 
 const MONTH_REGEXP = /^(\d{2})-(\d{4})$/;
@@ -53,7 +52,7 @@ if (arg.toLowerCase() === "index") {
 
         while (startDate.getTime() !== endDate.getTime()) {
             startDate.setDate(startDate.getDate() + 1);
-            await (new Promise((resolve) => setTimeout(resolve, 250)));
+            // await (new Promise((resolve) => setTimeout(resolve, 250)));
             const month = startDate.getMonth() + 1;
             const sourceUrl = `https://equestriadaily.com/${startDate.getFullYear()}_${month < 10 ? `0${month}` : month}_${startDate.getDate() < 10 ? `0${startDate.getDate()}` : startDate.getDate()}_archive.html`;
             const archivePath = path.join(rangeArchiveDirectoryPath, `archive_${startDate.getFullYear()}_${month}_${startDate.getDate()}`);
@@ -103,6 +102,8 @@ if (arg.toLowerCase() === "index") {
                     const htmlPath = path.join(articleArchiveDirectory, "index.html");
                     let htmlString = Buffer.from(articleBytes).toString("utf-8");
                     const staticsMap = {};
+
+                    let index = 0;
                     for (const image of images) {
                         try {
                             const source = image.attr("src");
@@ -113,12 +114,11 @@ if (arg.toLowerCase() === "index") {
                             }
                             
                             const staticContents = await staticResponse.bytes();
-                            const hash = crypto.createHash("md5").update(staticContents).digest("hex");
-                            const destPath = `${hash}${path.extname(source).length > 0 ? path.extname(source) : ".bin"}`;
-                            
+                            const destPath = `${index}${path.extname(source).length > 0 ? path.extname(source) : ".bin"}`;
                             fs.writeFileSync(path.join(assetsDirectory, destPath), staticContents);
                             htmlString = htmlString.replaceAll(source, path.join("./assets", destPath));
                             staticsMap[destPath] = source;
+                            index++;
                         } catch (error) {
                             console.log(`Failed to archive an image: ${error}`);
                         }
