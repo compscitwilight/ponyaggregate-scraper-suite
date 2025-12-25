@@ -75,7 +75,7 @@ Scrapes articles on <a href="https://equestriadaily.org">EquestriaDaily</a>, sto
 ### Usage
 #### Scrape a time range from EquestriaDaily
 ```bash
-node eqdScraper.js index [start] [end][pages_output_location]
+node eqdScraper.js index [start] [end] [pages_output_location]
 ```
 * `start`: start month for scraping (format: `MM-YYYY`)
 * `end`: end month for scraping (format: `MM-YYYY`, must be at least one month after `start`)

@@ -55,7 +55,7 @@ if (arg.toLowerCase() === "index") {
             startDate.setDate(startDate.getDate() + 1);
             await (new Promise((resolve) => setTimeout(resolve, 250)));
             const month = startDate.getMonth() + 1;
-            const sourceUrl = `https://equestriadaily.com/${startDate.getFullYear()}_${month}_${startDate.getDate() < 10 ? `0${startDate.getDate()}` : startDate.getDate()}_archive.html`;
+            const sourceUrl = `https://equestriadaily.com/${startDate.getFullYear()}_${month < 10 ? `0${month}` : month}_${startDate.getDate() < 10 ? `0${startDate.getDate()}` : startDate.getDate()}_archive.html`;
             const archivePath = path.join(rangeArchiveDirectoryPath, `archive_${startDate.getFullYear()}_${month}_${startDate.getDate()}`);
             try {
                 fs.statSync(archivePath);
@@ -104,25 +104,30 @@ if (arg.toLowerCase() === "index") {
                     let htmlString = Buffer.from(articleBytes).toString("utf-8");
                     const staticsMap = {};
                     for (const image of images) {
-                        const source = image.attr("src");
-                        const staticResponse = await fetch(source);
-                        if (!staticResponse.ok) {
-                            console.warn(`Failed to retrieve asset ${source}: Status code ${staticResponse.status}`);
-                            continue;
+                        try {
+                            const source = image.attr("src");
+                            const staticResponse = await fetch(source);
+                            if (!staticResponse.ok) {
+                                console.warn(`Failed to retrieve asset ${source}: Status code ${staticResponse.status}`);
+                                continue;
+                            }
+                            
+                            const staticContents = await staticResponse.bytes();
+                            const hash = crypto.createHash("md5").update(staticContents).digest("hex");
+                            const destPath = `${hash}${path.extname(source).length > 0 ? path.extname(source) : ".bin"}`;
+                            
+                            fs.writeFileSync(path.join(assetsDirectory, destPath), staticContents);
+                            htmlString = htmlString.replaceAll(source, path.join("./assets", destPath));
+                            staticsMap[destPath] = source;
+                        } catch (error) {
+                            console.log(`Failed to archive an image: ${error}`);
                         }
-
-                        const staticContents = await staticResponse.bytes();
-                        const hash = crypto.createHash("md5").update(staticContents).digest("hex");
-                        const destPath = `${hash}${path.extname(source).length > 0 ? path.extname(source) : ".bin"}`;
-
-                        fs.writeFileSync(path.join(assetsDirectory, destPath), staticContents);
-                        htmlString = htmlString.replaceAll(source, path.join("./assets", destPath));
-                        staticsMap[destPath] = source;
                     }
-
+                    console.log("past images scraping");
                     fs.writeFileSync(staticsMapPath, JSON.stringify(staticsMap));
-
+                    
                     fs.writeFileSync(htmlPath, htmlString);
+                    console.log("wrote html");
                 } catch (error) {
                     console.warn(`Failed to archive ${name}: ${error}`);
                 }
