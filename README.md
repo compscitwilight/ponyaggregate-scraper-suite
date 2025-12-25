@@ -102,10 +102,10 @@ node ibScraper.js scrape [imageboard] [board] [output_location]
 * `board`: a sub-board (e.g. /mlp/, /fim/, /clop/, /pony/,, etc)
 * `output_location`: path for the output directory which will metadata for all threads scraped and their associated images (threads go to `[output_location]/boards/[board]/thread-[thread_id].json`, images go to `[output_location]/images`)
 
-#### Zip a specific thread with their associated images
+#### Zip a specific board/thread with their associated images
 ```bash
 node ibScraper.js archive [output_directory] [slug] [output_zip]
 ```
 * `output_directory`: directory path to the directory containing static images and pages
-* `slug`: `imageboard/board/thread` format 
+* `slug`: `board/thread` format 
 * `output_zip`: file path for the resulting `.zip` file containing an archive of entire threads and referenced images
