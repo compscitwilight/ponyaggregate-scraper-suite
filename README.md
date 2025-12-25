@@ -2,13 +2,13 @@
 <p>
 This repository contains specialized scraping scripts for automating pony fandom archival efforts, and were specifically made for <a href="https://ponyaggregate.com">PonyAggregate</a> (though they can be used for any platform).
 
-Anypony can contribute meaningfully by creating a <a href="https://github.com/compscitwilight/ponyaggregate-scraping-suite/pulls">pull request</a>.
+Anypony can contribute meaningfully by creating a <a href="https://github.com/compscitwilight/ponyaggregate-scraper-suite/pulls">pull request</a>.
 
 Below is detailed documentation about what each script is used for, and how you can appropriately use them all.
 </p>
 
 ## Prerequisites
-* Clone with `git clone https://github.com/compscitwilight/ponyaggregate-scraping-suite`
+* Clone with `git clone https://github.com/compscitwilight/ponyaggregate-scraper-suite`
 * Install <a href="https://nodejs.org/en/download/current">Node.js</a>
 * Run `npm install` before executing any of the scripts in this repository
 * Install `yt-dlp` if it's not already on your system.
